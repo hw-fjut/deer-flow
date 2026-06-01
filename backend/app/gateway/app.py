@@ -307,6 +307,10 @@ This gateway provides runtime endpoints for agent runs plus custom endpoints for
                 "name": "health",
                 "description": "Health check and system status endpoints",
             },
+            {
+                "name": "devflow",
+                "description": "Automated full-lifecycle code development pipeline (requirements → architecture → development → testing → deployment)",
+            },
         ],
     )
 
@@ -374,6 +378,14 @@ This gateway provides runtime endpoints for agent runs plus custom endpoints for
 
     # Stateless Runs API (stream/wait without a pre-existing thread)
     app.include_router(runs.router)
+
+    # DevFlow API (automated code development pipeline)
+    try:
+        from deerflow.devflow.api.router import router as devflow_router
+        app.include_router(devflow_router)
+        logger.info("DevFlow API router registered")
+    except ImportError:
+        logger.warning("DevFlow module not available; skipping devflow router registration")
 
     @app.get("/health", tags=["health"])
     async def health_check() -> dict[str, str]:

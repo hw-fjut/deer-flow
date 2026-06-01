@@ -1,4 +1,4 @@
-﻿import {
+import {
   CompassIcon,
   GraduationCapIcon,
   ImageIcon,
@@ -93,6 +93,9 @@ export const zhCN: Translations = {
     ultraMode: "Ultra",
     ultraModeDescription:
       "继承自 Pro 模式，可调用子代理分工协作，适合复杂多步骤任务，能力最强",
+    devMode: "DevFlow",
+    devModeDescription:
+      "全流程代码开发模式，从需求分析、架构设计、代码开发、测试到部署一站式完成",
     reasoningEffort: "推理深度",
     reasoningEffortMinimal: "最低",
     reasoningEffortMinimalDescription: "检索 + 直接输出",
@@ -210,6 +213,25 @@ export const zhCN: Translations = {
     agentCreated: "智能体已创建！",
     startChatting: "开始对话",
     backToGallery: "返回 Gallery",
+  },
+
+  // DevFlow
+  devflow: {
+    workspaceTitle: "DevFlow 工作区",
+    workspaceSubtitle: "选择或创建工作区以开始代码开发",
+    workspaceListTitle: "工作区列表",
+    workspaceNamePlaceholder: "工作区名称",
+    workspacePathPlaceholder: "工作区路径 (E:\\path\\to\\project)",
+    create: "创建",
+    cancel: "取消",
+    confirmEnter: "确认进入该工作区",
+    pathLabel: "路径：",
+    dateLabel: "创建日期：",
+    developmentPipeline: "开发流程",
+    enterWorkspace: "进入工作区",
+    selectWorkspacePrompt: "请从左侧选择一个工作区",
+    newConversation: "新建会话",
+    sendMessagePlaceholder: "随便问点什么...",
   },
 
   // Breadcrumb

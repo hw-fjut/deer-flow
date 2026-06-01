@@ -184,6 +184,25 @@ export interface Translations {
     searchChats: string;
   };
 
+  // DevFlow
+  devflow: {
+    workspaceTitle: string;
+    workspaceSubtitle: string;
+    workspaceListTitle: string;
+    workspaceNamePlaceholder: string;
+    workspacePathPlaceholder: string;
+    create: string;
+    cancel: string;
+    confirmEnter: string;
+    pathLabel: string;
+    dateLabel: string;
+    developmentPipeline: string;
+    enterWorkspace: string;
+    selectWorkspacePrompt: string;
+    newConversation: string;
+    sendMessagePlaceholder: string;
+  };
+
   // Page titles (document title)
   pages: {
     appName: string;

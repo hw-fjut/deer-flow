@@ -95,6 +95,9 @@ export const enUS: Translations = {
     ultraMode: "Ultra",
     ultraModeDescription:
       "Pro mode with subagents to divide work; best for complex multi-step tasks",
+    devMode: "DevFlow",
+    devModeDescription:
+      "Full-lifecycle code development mode from requirements analysis, architecture design, development, testing to deployment",
     reasoningEffort: "Reasoning Effort",
     reasoningEffortMinimal: "Minimal",
     reasoningEffortMinimalDescription: "Retrieval + Direct Output",

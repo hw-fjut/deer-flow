@@ -682,10 +682,10 @@ export function InputBox({
                         </div>
                       </div>
                       {context.mode === "ultra" ? (
-                        <CheckIcon className="ml-auto size-4" />
-                      ) : (
-                        <div className="ml-auto size-4" />
-                      )}
+                      <CheckIcon className="ml-auto size-4" />
+                    ) : (
+                      <div className="ml-auto size-4" />
+                    )}
                     </PromptInputActionMenuItem>
                   </PromptInputActionMenu>
                 </DropdownMenuGroup>

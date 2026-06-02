@@ -201,6 +201,22 @@ export interface Translations {
     selectWorkspacePrompt: string;
     newConversation: string;
     sendMessagePlaceholder: string;
+    modePipeline: string;
+    modeChat: string;
+    selectAgent: string;
+    selectAgentPrompt: string;
+    newAgentChat: string;
+    chatWithAgent: string;
+    chatPlaceholder: string;
+    sessionClosed: string;
+    reopen: string;
+    close: string;
+    noChatSessions: string;
+    noMessages: string;
+    humanDecision: string;
+    conversationContinuation: string;
+    historyAccessPolicy: string;
+    messageCount: (n: number) => string;
   };
 
   // Page titles (document title)

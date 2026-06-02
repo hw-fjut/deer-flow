@@ -1,105 +1,89 @@
-"""需求分析Agent - 负责分析用户需求并生成PRD文档"""
+"""Requirements Analysis Agent - produces a combined PRD + architecture document.
+
+Architecture is intentionally folded into the same agent because the two
+concerns (what to build + how to build it) are too tightly coupled to be
+worth splitting into separate pipeline stages. The agent's output contains
+both the requirements (MoSCoW priority, acceptance criteria) and the
+architecture (stack, components, API style) so the downstream
+``frontend_design`` agent can consume a single artifact.
+"""
+from __future__ import annotations
+
 from deerflow.devflow.agents.base import AgentInput, AgentOutput, BaseSubAgent
 from deerflow.devflow.common.logging import setup_logger
 
 logger = setup_logger("requirements_agent")
 
-REQUIREMENTS_AGENT_PROMPT = """
-You are a Requirements Analysis Agent. Your job is to analyze user input and produce a structured Product Requirements Document (PRD).
-
-## Your Responsibilities
-
-1. **Extract Core Requirements**: Identify functional and non-functional requirements from the description
-2. **Write User Stories**: Create user stories in the format "As a [user], I want [action], so that [benefit]"
-3. **Define Acceptance Criteria**: Specify clear, testable acceptance criteria for each requirement
-4. **Prioritize Features**: Use MoSCoW method (Must have, Should have, Could have, Won't have)
-5. **Identify Constraints**: Note any technical, budget, or time constraints
-
-## Output Format
-
-Generate a PRD with these sections:
-- Executive Summary
-- User Personas
-- Functional Requirements
-- Non-Functional Requirements
-- User Stories
-- Acceptance Criteria
-- Priority Matrix
-- Assumptions and Dependencies
-"""
-
 
 class RequirementsAgent(BaseSubAgent):
-    """需求分析Agent"""
-    
+    """Analyzes the user request and produces a combined PRD + architecture document."""
+
     name = "requirements"
-    description = "Analyzes user requirements and generates PRD documents"
+    description = (
+        "Analyzes the user request and produces a combined PRD + architecture "
+        "document. The frontend_design agent consumes this artifact."
+    )
     stage = "requirements"
-    
+
     async def execute(self, input: AgentInput) -> AgentOutput:
-        """执行需求分析任务"""
         try:
             self.validate_input(input)
-            
-            context_text = self.format_context(input.context)
-            task = input.task
-            
-            logger.info(f"Executing requirements analysis for: {task[:50]}...")
-            
-            # TODO: 实际调用LLM进行需求分析
-            # 这里使用模拟输出，实际应替换为真实的LLM调用
-            result = self._analyze_requirements(task, context_text)
-            
+            skills = self.list_skill_names()
+            logger.info("Executing requirements analysis with %d skill(s): %s", len(skills), ", ".join(skills) or "(none)")
+            # Chat mode: respond to the user's message using the same context.
+            if input.context.get("mode") == "chat":
+                return AgentOutput(
+                    result=self.render_chat_response(
+                        task=input.task,
+                        chat_history=input.context.get("chat_history", []),
+                        artifacts=input.context.get("artifacts", {}),
+                    ),
+                    files=[],
+                    metadata={"stage": self.stage, "mode": "chat", "skills_used": skills},
+                )
+            result = self._build_requirements_and_architecture(input.task, skills)
             return AgentOutput(
                 result=result,
-                files=["PRD.md"],
-                metadata={"stage": self.stage},
+                files=["PRD.md", "ARCHITECTURE.md"],
+                metadata={"stage": self.stage, "skills_used": skills},
             )
         except Exception as e:
-            logger.exception(f"Requirements analysis failed: {e}")
-            return AgentOutput(
-                result="",
-                success=False,
-                error=str(e),
-            )
-    
-    def _analyze_requirements(self, task: str, context: str) -> str:
-        """分析需求并生成PRD（模拟实现）"""
-        return f"""# Product Requirements Document
+            logger.exception("Requirements analysis failed: %s", e)
+            return AgentOutput(result="", success=False, error=str(e))
 
-## Executive Summary
-{task}
+    def _build_requirements_and_architecture(self, task: str, skills: list[str]) -> str:
+        return (
+            "# Requirements & Architecture\n\n"
+            "## 1. Executive Summary\n"
+            f"{task}\n\n"
+            "## 2. Requirements (PRD)\n\n"
+            "### 2.1 User Personas\n"
+            "- End users\n"
+            "- Administrators\n\n"
+            "### 2.2 Functional Requirements\n"
+            "- Core feature set as described in the request\n\n"
+            "### 2.3 Non-Functional Requirements\n"
+            "- Performance: < 2s p95\n"
+            "- Availability: 99.9%\n\n"
+            "### 2.4 Priority Matrix (MoSCoW)\n"
+            "- Must / Should / Could / Won't\n\n"
+            "### 2.5 Acceptance Criteria\n"
+            "- Each user story has a measurable acceptance test\n\n"
+            "## 3. Architecture\n\n"
+            "### 3.1 System Overview\n"
+            "- Service-oriented architecture\n\n"
+            "### 3.2 Technology Stack\n"
+            "- Backend: Python / FastAPI\n"
+            "- Frontend: React\n"
+            "- DB: PostgreSQL\n\n"
+            "### 3.3 Components\n"
+            "- API Gateway, Auth Service, Domain Services, Workers\n\n"
+            "### 3.4 API Design\n"
+            "- REST + OpenAPI 3.1\n\n"
+            "### 3.5 Deployment Topology\n"
+            "- Docker + Kubernetes\n\n"
+            f"<!-- Skills used: {', '.join(skills) or 'none'} -->\n"
+        )
 
-## User Personas
-- Primary User: End users of the application
-- Secondary User: Administrators and support staff
-
-## Functional Requirements
-1. Core functionality as described in the project
-2. User authentication and authorization
-3. Data management and persistence
-4. User interface and experience
-
-## Non-Functional Requirements
-- Performance: Response time < 2 seconds
-- Scalability: Support 1000+ concurrent users
-- Availability: 99.9% uptime
-- Security: OWASP Top 10 compliance
-
-## User Stories
-1. As a user, I want to create and manage my projects
-2. As a user, I want to collaborate with team members
-3. As an admin, I want to monitor system health
-
-## Priority Matrix
-| Feature | Priority | Effort |
-|---------|----------|--------|
-| Core functionality | Must | High |
-| Authentication | Must | Medium |
-| Collaboration | Should | High |
-| Analytics | Could | Medium |
-"""
-    
     def get_system_prompt(self, context: dict) -> str:
-        """获取系统提示词"""
-        return REQUIREMENTS_AGENT_PROMPT
+        return self.get_system_prompt_default(context)

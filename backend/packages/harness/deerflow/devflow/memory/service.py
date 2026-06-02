@@ -87,8 +87,20 @@ class MemoryService:
             "entries": [],
         }
         
-        # Load all stage artifacts
-        stages = ["requirements", "architecture", "development", "testing", "deployment"]
+        # Load all stage artifacts. Order matches the pipeline declaration
+        # (linear head + loop subgraph).
+        stages = [
+            "requirements",
+            "frontend_design",
+            "spec_development",
+            "code_testing",
+            "deployment",
+            # Legacy stages kept for backwards compatibility with the
+            # pre-loop project format.
+            "architecture",
+            "development",
+            "testing",
+        ]
         for stage in stages:
             artifact = await self.get_stage_artifact(project_id, stage)
             if artifact:
